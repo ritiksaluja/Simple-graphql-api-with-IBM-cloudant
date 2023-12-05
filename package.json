@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "@cloudant/cloudant": "^4.5.1",
+    "express": "^4.18.2",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.8.0",
+    "nodemon": "^3.0.2"
+  },
+  "name": "graphql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ritik",
+  "license": "ISC",
+  "description": ""
+}

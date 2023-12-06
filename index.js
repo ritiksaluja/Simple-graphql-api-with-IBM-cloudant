@@ -20,13 +20,64 @@ var schema = buildSchema(`
   type Query {
     employees: [Employee]
   }
+
+  type Mutation {
+    addEmployee(name: String!, role: String!, salary: Int!): Employee
+    updateEmployee(_id: String!, name: String, role: String, salary: Int): Employee
+  }
 `);
 
 const root = {
     employees: async ()=>{
         const data = await db.list({ include_docs: true });
         return data.rows.map(row => row.doc);
+    } , 
+
+    addEmployee: async ({ name, role, salary }) => {
+        const employee = {
+          name,
+          role,
+          salary
+        };
+        const response = await db.insert(employee);
+        return {
+          _id: response.id,
+          _rev: response.rev, 
+          ...employee
+        };
+      } , 
+
+      updateEmployee: async ({ _id, name, role, salary }) => {
+        
+        const existingEmployee = await db.get(_id)
+
+            try{
+                const updatedEmployee = {
+                    ...existingEmployee,
+                    name: name || existingEmployee.name,
+                    role: role || existingEmployee.role,
+                    salary: salary || existingEmployee.salary
+                };
+        
+                const response = await db.insert(updatedEmployee, { rev: existingEmployee._rev });
+        
+                return {
+                    _id: response.id,
+                    _rev: response.rev,
+                    ...updatedEmployee
+                
+            } 
+                
+            }
+    
+           catch (error) {
+            return {
+                msg: "User not found"
+            };
+        }
     }
+
+
 }
 
 app.use('/graphql', graphqlHTTP({
